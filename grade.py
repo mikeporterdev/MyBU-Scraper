@@ -11,5 +11,5 @@ class Grade(object):
         self.grade = grade
         self.date = date
         
-    def toString(self):
-        print("Assignment: " + self.title + " marked, grade: " + self.grade)
+    def __str__(self):
+        return "Assignment: " + self.title + " marked, grade: " + self.grade
