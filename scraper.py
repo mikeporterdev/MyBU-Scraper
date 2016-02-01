@@ -56,20 +56,20 @@ def checkGrade():
     grades = parseGrades(bucket_elems)
 
     if len(grades) > 0:
+        message = [str(grade) for grade in grades]    
         if settings.pushoverSettings['usePushover']:
-            sendPush(grades)
+            sendPush(message)
         else:
             print("Grades are up!")
-            print([str(grade) for grade in grades])
+            print(message)
 
-def sendPush(grades):
-    pushMessage = [grade.toString() for grade in grades]
+def sendPush(message):
     conn = http.client.HTTPSConnection("api.pushover.net:443")
     conn.request("POST", "/1/messages.json",
     urllib.parse.urlencode({
                             "token": settings.pushoverSettings['pushover_token'],
                             "user": settings.pushoverSettings['pushover_user_api'],
-                            "message": pushMessage,
+                            "message": message,
                             }), { "Content-type": "application/x-www-form-urlencoded" })
     conn.getresponse()
   
