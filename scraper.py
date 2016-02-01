@@ -27,6 +27,8 @@ course_id = "48041"
 
 login_url = "https://mybu.bournemouth.ac.uk/webapps/login/"
 gradeurl = 'https://mybu.bournemouth.ac.uk/webapps/bb-mygrades-bb_bb60/myGrades?course_id=_' + course_id + '_1&stream_name=mygrades&is_stream=false'
+
+gradeTitles = []
      
 def getGrades():
     with requests.Session() as s:
@@ -40,11 +42,11 @@ def parseGrades(uglyGrades):
     for uglyGrade in uglyGrades:
         gradedDate = uglyGrade.find_class('lastActivityDate')[0].text_content().replace("\n", "").strip()
         gradedDate = datetime.strptime(gradedDate, '%d-%b-%Y %H:%M')
+        title = uglyGrade.find_class('gradable')[0].text_content().replace("\n", "").strip()
+        mark = uglyGrade.findall(".//span[@class='grade']")[0].text_content()
         
-        if gradedDate.date() == datetime.today().date():
-            title = uglyGrade.find_class('gradable')[0].text_content().replace("\n", "").strip()
-            mark = uglyGrade.findall(".//span[@class='grade']")[0].text_content()
-            
+        if gradedDate.date() == datetime.today().date() and title not in gradeTitles:    
+            gradeTitles.append(title)
             grades.append(Grade(title, gradedDate, mark))
         
     return grades
