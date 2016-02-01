@@ -9,7 +9,8 @@ Can leave token and user api as placeholder if usePushover is set to false
 
 settings = {
             "mybu_user" : "[MYBU USERNAME]",
-            "mybu_pass" : "[MYBU PASSWORD]"
+            "mybu_pass" : "[MYBU PASSWORD]",
+            "course_ids" : ["[LIST OF COURSE IDS]"]
             }
 
 pushoverSettings = {

@@ -21,21 +21,25 @@ payload = {
            "password" : settings.settings['mybu_pass']
            }
 
-#48037
-#48041
 course_id = "48041"
 
 login_url = "https://mybu.bournemouth.ac.uk/webapps/login/"
-gradeurl = 'https://mybu.bournemouth.ac.uk/webapps/bb-mygrades-bb_bb60/myGrades?course_id=_' + course_id + '_1&stream_name=mygrades&is_stream=false'
+
+gradeurlStart = 'https://mybu.bournemouth.ac.uk/webapps/bb-mygrades-bb_bb60/myGrades?course_id=_'
+gradeurlEnd = '_1&stream_name=mygrades&is_stream=false'
 
 gradeTitles = []
      
 def getGrades():
     with requests.Session() as s:
         s.post(login_url, data=payload)
-        gradetext = s.get(gradeurl)
         
-        return gradetext.text
+        grades = []
+        
+        for courseId in settings.settings['course_ids']:
+            grades.append(s.get(gradeurlStart + courseId + gradeurlEnd))
+        
+        return grades
     
 def parseGrades(uglyGrades):
     grades = []
@@ -52,18 +56,19 @@ def parseGrades(uglyGrades):
     return grades
     
 def checkGrade():
-    tree = html.fromstring(getGrades())
-    bucket_elems = tree.find_class('graded_item_row')
+    for returnedGrades in getGrades():
+        tree = html.fromstring(returnedGrades.text)
+        bucket_elems = tree.find_class('graded_item_row')
+        
+        grades = parseGrades(bucket_elems)
     
-    grades = parseGrades(bucket_elems)
-
-    if len(grades) > 0:
-        message = [str(grade) for grade in grades]    
-        if settings.pushoverSettings['usePushover']:
-            sendPush(message)
-        else:
-            print("Grades are up!")
-            print(message)
+        if len(grades) > 0:
+            message = [str(grade) for grade in grades]    
+            if settings.pushoverSettings['usePushover']:
+                sendPush(message)
+            else:
+                print("Grades are up!")
+                print(message)
 
 def sendPush(message):
     conn = http.client.HTTPSConnection("api.pushover.net:443")
