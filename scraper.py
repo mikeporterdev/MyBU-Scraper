@@ -17,10 +17,10 @@ payload = {
            "password" : settings.settings['mybu_pass']
            }
 
-login_url = "https://mybu.bournemouth.ac.uk/webapps/login/"
-gradeurl = 'https://mybu.bournemouth.ac.uk/webapps/bb-mygrades-bb_bb60/myGrades?course_id=_48041_1&stream_name=mygrades&is_stream=false'
-   
+course_id = "48041"
 
+login_url = "https://mybu.bournemouth.ac.uk/webapps/login/"
+gradeurl = 'https://mybu.bournemouth.ac.uk/webapps/bb-mygrades-bb_bb60/myGrades?course_id=_' + course_id + '_1&stream_name=mygrades&is_stream=false'
      
 def getGrades():
     with requests.Session() as s:
