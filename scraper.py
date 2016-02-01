@@ -17,27 +17,25 @@ import settings
 
 
 payload = {
-           "user_id" : settings.settings['mybu_user'],
-           "password" : settings.settings['mybu_pass']
+           "user_id" : settings.settings['mybuUser'],
+           "password" : settings.settings['mybuPass']
            }
 
-course_id = "48041"
+LOGIN_URL = "https://mybu.bournemouth.ac.uk/webapps/login/"
 
-login_url = "https://mybu.bournemouth.ac.uk/webapps/login/"
-
-gradeurlStart = 'https://mybu.bournemouth.ac.uk/webapps/bb-mygrades-bb_bb60/myGrades?course_id=_'
-gradeurlEnd = '_1&stream_name=mygrades&is_stream=false'
+GRADE_URL_START = 'https://mybu.bournemouth.ac.uk/webapps/bb-mygrades-bb_bb60/myGrades?course_id=_'
+GRADE_URL_END = '_1&stream_name=mygrades&is_stream=false'
 
 gradeTitles = []
      
 def getGrades():
     with requests.Session() as s:
-        s.post(login_url, data=payload)
+        s.post(LOGIN_URL, data=payload)
         
         grades = []
         
-        for courseId in settings.settings['course_ids']:
-            grades.append(s.get(gradeurlStart + courseId + gradeurlEnd))
+        for courseId in settings.settings['courseIds']:
+            grades.append(s.get(GRADE_URL_START + courseId + GRADE_URL_END))
         
         return grades
     
@@ -74,8 +72,8 @@ def sendPush(message):
     conn = http.client.HTTPSConnection("api.pushover.net:443")
     conn.request("POST", "/1/messages.json",
     urllib.parse.urlencode({
-                            "token": settings.pushoverSettings['pushover_token'],
-                            "user": settings.pushoverSettings['pushover_user_api'],
+                            "token": settings.pushoverSettings['pushoverToken'],
+                            "user": settings.pushoverSettings['pushoverUserApiKey'],
                             "message": message,
                             }), { "Content-type": "application/x-www-form-urlencoded" })
     conn.getresponse()
