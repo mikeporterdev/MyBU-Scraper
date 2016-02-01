@@ -17,7 +17,8 @@ payload = {
            "password" : settings.settings['mybu_pass']
            }
 
-course_id = "48041"
+#48037
+course_id = "48037"
 
 login_url = "https://mybu.bournemouth.ac.uk/webapps/login/"
 gradeurl = 'https://mybu.bournemouth.ac.uk/webapps/bb-mygrades-bb_bb60/myGrades?course_id=_' + course_id + '_1&stream_name=mygrades&is_stream=false'
@@ -31,17 +32,21 @@ def getGrades():
     
 def checkGrade():
     tree = html.fromstring(getGrades())
-    bucket_elems = tree.findall(".//div[@id='grades_wrapper']")
-    bucket_names = [bucket_elem.text_content().replace("\n", "").strip() for bucket_elem in bucket_elems]
+    bucket_elems = tree.find_class('graded_item_row')
     
-    t = re.split(r'\s{2,}', bucket_names[0])
+    uglyGrades = [bucket_elem.text_content().replace("\n", "").strip() for bucket_elem in bucket_elems]
     
-    if len(t) > 4:
+    grades = []
+    
+    for uglyGrade in uglyGrades:
+        grades.append(re.split(r'\s{2,}', uglyGrade))
+    
+    if len(grades) > 4:
         if settings.pushoverSettings['usePushover']:
-            sendPush(bucket_names[0])
+            sendPush(uglyGrades[0])
         else:
             print("Grades are up!")
-            print(t)
+            print(grades)
       
 def sendPush(grades):
     conn = http.client.HTTPSConnection("api.pushover.net:443")
