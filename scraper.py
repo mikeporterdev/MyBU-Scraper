@@ -6,8 +6,6 @@ Created on 1 Feb 2016
 from datetime import datetime
 import http
 from lxml import html
-from lxml.html import tostring
-import re
 import requests
 import time
 import urllib
